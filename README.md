@@ -3,7 +3,7 @@ This repository provides implimentation in PyTorch for the paper "Quantifying mo
 
 <img src="Pipe2.png" width="400" height="200">
 
-Solarized dark             |  Solarized Ocean
+Byaesian U-Net             |  The Integration of Uncertainty in Clinical Workflow
 :-------------------------:|:-------------------------:
 <img src="BUnet2.png" width="400" height="200">  |  <img src="Pipe2.png" width="400" height="200">
 
