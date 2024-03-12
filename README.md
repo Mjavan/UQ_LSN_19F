@@ -5,7 +5,7 @@ This repository provides implimentation in PyTorch for the paper "Quantifying mo
 
 Solarized dark             |  Solarized Ocean
 :-------------------------:|:-------------------------:
-![](BUnet2.png)  |  ![]<img src="Pipe2.png" width="400" height="200">
+![]<img src="BUnet2.png" width="400" height="200">  |  ![]<img src="Pipe2.png" width="400" height="200">
 
 **Approach**: The paper integrates a Bayesian approach to the Unet for semnatic segentation of low signal-to-noise ratio (SNR) of 19F MRI. 19F MRI is a reall dataset that detecting 19F MRI signals is importnat for studying varoius diseases and treatments. However the low signal-to-noise ratio (SNR) of 19F MRI necessitates computational methods to reliably detect 19F signal regions and segment these from the background. In this paper we posrpoed a Bayesian Deep Learning model that not only increases sensitivity of 19F MRI significantly but also it provides uncertainty maps to detct the prediction failures and investigating the regions with high uncertainties using experts. 
 
