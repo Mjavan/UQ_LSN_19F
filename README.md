@@ -13,4 +13,9 @@ It will run code with default parameters, and save chekpoints in `ckpts` folder.
 **Parameters**:
 
 
+To test the model, use `test.py`. You can simply run the following code:
+
+`python UQ_LSN_19F/test.py`
+
+
 
