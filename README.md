@@ -14,9 +14,6 @@ https://doi.org/10.1016/j.cviu.2024.103967
 
 
 
-
-
-
 ### Usage:
 
 To train the model, run the code in `train.py`. You can simply run the following:
@@ -25,12 +22,12 @@ To train the model, run the code in `train.py`. You can simply run the following
 
 It will run code with default parameters, and save chekpoints in `ckpts` folder.
 
-**Parameters**:
-
-
 To test the model, use `test.py`. You can simply run the following code:
 
 `python UQ_LSN_19F/test.py`
+
+### Data:
+For training the model we used both synthetic data and real data that can be found in the folder `Data`. For test set we only used real data. 
 
 
 
