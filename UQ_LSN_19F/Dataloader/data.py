@@ -91,16 +91,13 @@ class RandFlip(object):
 
 def get_transform(pad=0,fl_rate=None):
 
-    if pad and not fl_rate:
-            
+    if pad and not fl_rate:    
         transform = transforms.Compose([RandomCropResize(pad)])
     
     if fl_rate and not pad:
-        
         transform = transforms.Compose([RandFlip(fl_rate)])  
         
     if pad and fl_rate:
-        
         transform = transforms.Compose([RandomCropResize(pad),RandFlip(fl_rate)]) 
         
     return(transform)
@@ -216,7 +213,6 @@ def get_train_val_set(dataset,seed=42,val_size=1,transform=None):
     val_set = Subset(dataset,val_ind)
     
     if transform:
-        
         train_set.transform = transform
                 
     return(train_set, val_set)
