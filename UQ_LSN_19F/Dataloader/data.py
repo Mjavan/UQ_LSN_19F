@@ -23,10 +23,8 @@ warnings.filterwarnings('ignore')
 
 
 def binerize(mask):
-   
     mask_b = np.ones_like(mask)
     mask_b = (mask!=0)
-    
     return(mask_b)
 
 
@@ -70,13 +68,9 @@ class RandomCropResize(object):
         z = np.random.randint(0,tot_pad)
         
         vol= vol.squeeze()
-        
         h,w,d = vol.shape
-        
         vol = np.pad(vol,((self.pad,self.pad), (self.pad,self.pad), (self.pad, self.pad)), 'constant')
-        
         vol = vol[x:x+h,y:y+w,z:z+d]
-        
         vol = np.expand_dims(vol,0)
         
         return(vol)  
@@ -115,22 +109,26 @@ def get_transform(pad=0,fl_rate=None):
 
 class NoisedData(Dataset):
     
-    def __init__(self,root_dir,rm_out=True,nr=False,in_size=None,syn=0):
+    def __init__(self,root_dir,rm_out=True,nr=False,in_size=None,syn=0, test=False):
         
         self.root_dir = root_dir
         self.rm_out = rm_out
         self.nr = nr
         self.in_size = in_size
+        self.test = test
+
+        if self.test:
+            self.data_dir = self.root_dir/'testrealData'
+        else:
+            self.data_dir = self.root_dir/'realData'
         
-        
-        self.dict_list_real = os.listdir(self.root_dir/'realData')
+        self.dict_list_real = os.listdir(self.data_dir)
         
         if '.ipynb_checkpoints' in self.dict_list_real:
-            
             idx_ch = self.dict_list_real.index('.ipynb_checkpoints')
             del self.dict_list_real[idx_ch]
         
-        dict_imgs_real = [spio.loadmat(os.path.join(self.root_dir/'realData',img)) for img in self.dict_list_real]
+        dict_imgs_real = [spio.loadmat(os.path.join(self.data_dir,img)) for img in self.dict_list_real]
             
         self.data = [dic['testData'] for dic in dict_imgs_real]
         self.gt = [dic['refData_thresholded'] for dic in dict_imgs_real]
@@ -166,15 +164,10 @@ class NoisedData(Dataset):
     
     
     def rem_outliers(self,vox,nvox=3):
-        
         labels, num = label(vox)
-    
         for i in range(1, num+1):
-        
             nb_vox = np.sum(vox[labels==i])
-            
             if nb_vox < nvox:
-                
                 vox[labels==i]=0     
         return(vox)
     
