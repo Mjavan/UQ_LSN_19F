@@ -1,8 +1,6 @@
-
 import torch
 from torch import nn
 import torch.nn.functional as F
-
 
 import warnings 
 warnings.filterwarnings('ignore')
@@ -114,17 +112,12 @@ class Up(nn.Module):
                  drop=None,drop_center='all',curr_depth=0,depth=4,bn=True,bilinear=True):
 
         super(Up,self).__init__()
-
         do_mode = _get_dropout_mode(drop_center, curr_depth, depth, False)
 
-  
         if bilinear:
-
             self.up = nn.Upsample(scale_factor=2, mode='trilinear', align_corners=True)
             self.conv = DoubleConv(in_channel, out_channel, in_channel // 2,drop,do_mode,bn)
-
         else:
-
             self.up = nn.ConvTranspose3d(in_channel,in_channel // 2, kernel_size=2, stride=2)
             self.conv = DoubleConv(in_channel, out_channel,drop=drop,drop_mode= do_mode,bn=bn)
 
@@ -136,18 +129,15 @@ class Up(nn.Module):
 
         x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2,diffY // 2, diffY - diffY // 2,diffZ // 2,diffZ - diffZ // 2 ])
         x = torch.cat([x2, x1], dim=1)
-
         return(self.conv(x))
 
 class OutConv(nn.Module):
 
     def __init__(self,in_channel,out_channel):
-
         super().__init__()
         self.conv= nn.Conv3d(in_channel,out_channel, kernel_size=1)
 
     def forward(self,x):
-
         return(self.conv(x))
     
 class UNet(nn.Module):
@@ -169,7 +159,6 @@ class UNet(nn.Module):
         self.drop_center = drop_center
         self.bn = bn
         
-
         curr_depth = 0
         do_mode = _get_dropout_mode(drop_center, curr_depth, depth, True)
         self.inc = DoubleConv(n_channels,n_filters,drop=drop,drop_mode=do_mode,bn=bn)
@@ -194,10 +183,8 @@ class UNet(nn.Module):
         self.up4 = Up(n_filters*2,n_filters, drop, drop_center,curr_depth,depth,bn,bilinear)
 
         self.outc = OutConv(n_filters,n_classes)
-
-
+                     
     def forward(self,x):
-        
         x1 = self.inc(x)
         x2 = self.down1(x1)
         x3 = self.down2(x2)
@@ -219,10 +206,8 @@ class UNet(nn.Module):
         predictions = x.data.new(Nsamples,b,ch,h,w,d)
 
         for i in range(Nsamples):
-
             y = self.forward(x.float())
             predictions[i] = y
-
         return(predictions)
     
     
