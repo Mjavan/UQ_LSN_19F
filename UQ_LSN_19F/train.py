@@ -39,7 +39,6 @@ from UQ_LSN_19F.Dataloader.data import NoisedData,get_train_val_set,get_transfor
 
 parser = argparse.ArgumentParser(description='TRAINING SG_MCMC FOR F19-LSN')
 
-
 parser.add_argument('--seed',type=int,default=42,
                         help='the seed for experiments!')
 
@@ -183,6 +182,9 @@ def main(args):
     np.random.seed(seed)
     
     root_dir = Path('./UQ_LSN_19F')
+    param_dir = root_dir / 'params'
+
+    os.makedirs(param_dir,exist_ok=True)
 
     device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')    
     
@@ -190,15 +192,13 @@ def main(args):
         torch.cuda.set_device(device)
     
     HPD = vars(args)
-    with open(root_dir / 'params' / f'{args.exp}_noise_param.json','w') as file:
+    with open(param_dir / f'{args.exp}_noise_param.json','w') as file:
         json.dump(HPD,file,indent=4)
-       
-               
+                  
     path_data = root_dir / 'Data'
     save_dir = root_dir / 'ckpts'
     dataset = NoisedData(path_data,rm_out=args.rm_out,nr=args.nr,in_size=args.in_size,syn=args.syn)
         
-    
     os.makedirs(save_dir,exist_ok=True)
     
     # Transformations
@@ -207,15 +207,12 @@ def main(args):
     else:
         transform_train = None
         
-    
     # Datasets                    
     train_set, val_set = get_train_val_set(dataset,seed=args.seed,val_size=args.val_size,transform=transform_train)
         
-    
     # Making Dataloaders
     train_loader = DataLoader(train_set, batch_size=args.b_size_tr,num_workers=args.n_workers,drop_last=True,shuffle=True)    
     val_loader = DataLoader(val_set, batch_size=args.b_size_val,num_workers=args.n_workers,drop_last=True,shuffle=True)
-    
         
     N_train = len(train_loader.dataset)
     
@@ -264,7 +261,6 @@ def main(args):
     cycle_batch_length = args.cycle_length * n_batch
     batch_idx = 0
 
-    
     weight_set_samples = []
     sampled_epochs = []
     
@@ -279,7 +275,6 @@ def main(args):
         tic = time.time()
         
         for phase in ['train','val']:
-            
             if phase=='train':
                 model.train()
                 dataloader = train_loader
@@ -301,11 +296,9 @@ def main(args):
                 probs = F.sigmoid(out)
                 pred = (probs>0.5).float()
                 
-                
                 dice_t = Dice(pred.squeeze(),mask.squeeze())
                 total_dice += dice_t.item()
                 
-            
                 if args.crit=='BCrsent':
                     target= mask
                     loss_t= loss(out,target)                       
@@ -334,13 +327,11 @@ def main(args):
                 if phase=='train': 
                     
                     optimizer.zero_grad()
-                    
                     if args.lr_sch =='cyclic':
-                        
                         update_lr(args.lr0,batch_idx,cycle_batch_length,args.n_sam_cycle,optimizer)
 
                     loss_t.backward()
-
+                    
                     if args.lr_sch =='cyclic':
                         torch.nn.utils.clip_grad_norm_(model.parameters(),max_norm=CLIP_NORM ,norm_type=2)
                         
@@ -366,19 +357,15 @@ def main(args):
             dice_total[phase].append(total_dice/len(dataloader))
 
             if args.save_sample:
-
                 if epoch>=args.sampling_start and (epoch%args.cycle_length)+1>(args.cycle_length-args.n_sam_cycle) and\
                 phase=='train':
-
                     if len(weight_set_samples) >= args.samples:
-                        
                         weight_set_samples.pop(0)
                         sampled_epochs.pop(0)
 
                     weight_set_samples.append(copy.deepcopy(model.state_dict()))
                     sampled_epochs.append(epoch)
-                        
-    
+                    
         toc = time.time()
         runtime_epoch = toc - tic
         
@@ -392,7 +379,6 @@ def main(args):
         loss_val = loss_total['val'][epoch]
         
         if is_best:
-            
             checkpoints = {
                 'epoch': epoch,
                 'model': model.state_dict(),
@@ -401,12 +387,9 @@ def main(args):
                 'val_dice_score': dice_total['val'][epoch]}
         
             torch.save(checkpoints, save_dir / f'{args.opt}_{args.exp}_best_model.pt')
-        
-    
+            
     state = pd.DataFrame({'train_loss':loss_total['train'], 'valid_loss':loss_total['val'],
              'train_dice':dice_total['train'],'valid_dice':dice_total['val']})
-    
-    state.to_csv(root_dir / 'loss' / f'{args.opt}_exp_{args.exp}_loss.csv')
     
     # save model at the end of training
     print(f'model saved at end of training!')
@@ -422,9 +405,7 @@ def main(args):
         torch.save(sampled_epochs,save_dir / f'{args.opt}_{args.exp}_epochs.pt')
     
     if args.plot:  
-
         plotCurves(state,root_dir / 'lr_curves' / f'{args.opt}_exp_{args.exp}_loss.png') 
-    
     
     print(f'finish training')
 
