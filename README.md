@@ -11,7 +11,15 @@ Bayesian U-Net             |   Integration of Uncertainty in Clinical Workflow
 
 https://doi.org/10.1016/j.cviu.2024.103967
 
-### Dependencies: 
+### Installation:
+
+Install requirements e.g. via 
+
+`pip install -r requirements.txt`
+
+Install UQ_LSN_19F module via
+
+`pip install .`
 
 
 ### Usage:
