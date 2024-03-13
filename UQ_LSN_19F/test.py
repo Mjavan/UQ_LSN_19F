@@ -23,7 +23,9 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-from UQ_LSN_19F.Metrics.metrics import recall,TNR,FDR,FPR,precision,fp_fn,AUC_Roc_PR,correct_uncmap_thresholded,roc_uncmap_thresholded,ECE
+from UQ_LSN_19F.Metrics.metrics import\
+recall,TNR,FDR,FPR,precision,fp_fn,AUC_Roc_PR,\
+correct_uncmap_thresholded,roc_uncmap_thresholded,ECE
 from UQ_LSN_19F.Utils.utils import Binary_Entropy,unpad
 from UQ_LSN_19F.unet import UNet
 from UQ_LSN_19F.dice import DiceCoef, DiceLoss
@@ -108,7 +110,6 @@ def test(args):
         checkpoint = torch.load(load_dir, map_location=device)
         epoch = checkpoint['epoch']
 
-    
     if args.sampler=='sgmcmc' or args.sampler=='sgd':             
         weights_set = torch.load(os.path.join(svd,f'{args.opt}_{args.exp}_state_dicts.pt'),map_location=device)
         sampled_epochs = torch.load(os.path.join(svd,f'{args.opt}_{args.exp}_epochs.pt'),map_location=device)
@@ -123,7 +124,6 @@ def test(args):
         weight_set_samples = weights_set
                    
     else:
-        
         model.load_state_dict(checkpoint['model'])
         model = model.to(device)
     
@@ -134,8 +134,7 @@ def test(args):
         loss = nn.BCEWithLogitsLoss().to(device)
             
     Dice = DiceCoef()
-   
-                    
+                   
     # original dimension of images
     ch,h,w,d = 1,112,40,40
     
@@ -157,7 +156,6 @@ def test(args):
     with torch.no_grad(): 
         
         for j,(vol,mask,idx) in enumerate(test_loader):
-
             vol = vol.to(device)
             mask = mask.to(device)
             indices.extend(idx)
@@ -171,7 +169,6 @@ def test(args):
                     
                     model.load_state_dict(weight_dict)
                     model.to(device)
-                    
                     out[idx] = unpad(model(vol.float()))
                 
                 if not args.logits:
@@ -182,7 +179,6 @@ def test(args):
                             
             else:
                 out = unpad(model(vol))
-                
                 if not args.logits:
                     probs = F.sigmoid(out).data
                 
