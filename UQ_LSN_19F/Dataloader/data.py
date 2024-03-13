@@ -31,10 +31,8 @@ def binerize(mask):
 class Resize(object):
     
     def __init__(self,in_size):
-        
         in_size= tuple(in_size) if isinstance(in_size,list) else (in_size,in_size,in_size)
         self.in_D,self.in_H,self.in_W = in_size
-        
         assert not self.in_D%2 and not self.in_H%2 and not self.in_W%2, "Input size must be divided by 2!"
     
     def __call__(self,vol):
@@ -78,19 +76,14 @@ class RandomCropResize(object):
 
 class RandFlip(object):
     def __init__(self,flip_rate):
-        
         self.flip_rate = flip_rate
         
     def __call__(self,vol):
-        
         if np.random.random_sample() < self.flip_rate:
             return(np.fliplr(vol))
-        
         return(vol)
     
-
 def get_transform(pad=0,fl_rate=None):
-
     if pad and not fl_rate:    
         transform = transforms.Compose([RandomCropResize(pad)])
     
@@ -105,9 +98,7 @@ def get_transform(pad=0,fl_rate=None):
 
 
 class NoisedData(Dataset):
-    
     def __init__(self,root_dir,rm_out=True,nr=False,in_size=None,syn=0, test=False):
-        
         self.root_dir = root_dir
         self.rm_out = rm_out
         self.nr = nr
@@ -132,9 +123,7 @@ class NoisedData(Dataset):
         self.id = [dic['imageID'][0][:-10] for dic in dict_imgs_real]
         
         if syn:
-            
             self.dict_list_syn = os.listdir(self.root_dir/'artificialData')
-            
             if '.ipynb_checkpoints' in self.dict_list_syn:
                 idx_ch = self.dict_list_syn.index('.ipynb_checkpoints')
                 del self.dict_list_syn[idx_ch]
@@ -146,7 +135,6 @@ class NoisedData(Dataset):
             self.gt_syn = [dic['refData_thresholded'] for dic in dict_imgs_syn]
             self.id_syn = [dic['imageID'][0] for dic in dict_imgs_syn]
             
-            
             self.data.extend(self.data_syn)
             self.gt.extend(self.gt_syn)
             self.id.extend(self.id_syn)
@@ -156,9 +144,7 @@ class NoisedData(Dataset):
         
         
     def __len__(self):
-        
         return(self.len)
-    
     
     def rem_outliers(self,vox,nvox=3):
         labels, num = label(vox)
@@ -167,7 +153,6 @@ class NoisedData(Dataset):
             if nb_vox < nvox:
                 vox[labels==i]=0     
         return(vox)
-    
     
     def __getitem__(self,index):
         
@@ -178,7 +163,6 @@ class NoisedData(Dataset):
         self.mask = binerize(self.mask)
         
         if self.rm_out:
-            
             self.mask = self.rem_outliers(self.mask)
              
         self.vol  = Resize(self.in_size)(self.vol)
