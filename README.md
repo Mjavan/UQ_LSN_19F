@@ -1,7 +1,7 @@
 # UQ_LSN_19F
 This repository provides implimentation in PyTorch for the paper "Quantifying model uncertainty for semantic segmentation of Fluorine-19 MRI using stochastic gradient MCMC". 
 
-Bayesian U-Net             |  The Integration of Uncertainty in Clinical Workflow
+Bayesian U-Net             |   Integration of Uncertainty in Clinical Workflow
 :-------------------------:|:-------------------------:
 <img src="BUnet2.png" width="600" height="200">  |  <img src="Pipe2.png" width="600" height="200">
 
