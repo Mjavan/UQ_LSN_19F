@@ -11,7 +11,7 @@ Byaesian U-Net             |  The Integration of Uncertainty in Clinical Workflo
 
 https://doi.org/10.1016/j.cviu.2024.103967
 
-### Dependencies 
+### Dependencies: 
 
 
 ### Usage:
