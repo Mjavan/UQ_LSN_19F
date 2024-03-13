@@ -32,7 +32,7 @@ from UQ_LSN_19F.dice import DiceCoef, DiceLoss
 from UQ_LSN_19F.Dataloader.data import NoisedData
 
 
-parser = argparse.ArgumentParser(description='TESTING SG_MCMC FOR Noise')
+parser = argparse.ArgumentParser(description='TESTING BUNet on 19FMRI')
 
 parser.add_argument('--exp',type=int,default=850,
                     help='ID of this expriment!')
@@ -97,7 +97,6 @@ def test(args):
     test_loader = DataLoader(testset,batch_size=2,num_workers=4,drop_last=True,shuffle=False)
        
     device = torch.device(f'cuda:0' if torch.cuda.is_available() else 'cpu')
-
     model = UNet(n_channels=1,n_classes=1,n_filters=HPT['n_filter'],drop=args.dr,bilinear=HPT['bil'])
           
     if args.eval == 'last':
@@ -119,8 +118,7 @@ def test(args):
         for wieght in (weights_set):
             if len(weights_set)> args.Nsamples:
                 weights_set.pop(0)
-                sampled_epochs.pop(0)
-            
+                sampled_epochs.pop(0)    
         weight_set_samples = weights_set
                    
     else:
@@ -153,30 +151,23 @@ def test(args):
     
     tic = time.time()
 
-    with torch.no_grad(): 
-        
+    with torch.no_grad():  
         for j,(vol,mask,idx) in enumerate(test_loader):
             vol = vol.to(device)
             mask = mask.to(device)
             indices.extend(idx)
-            
             if args.sampler=='sgmcmc' or args.sampler=='sgd':
-                
                 # store predictions over sample weights
                 out = vol.data.new(args.Nsamples,args.b_size,ch,h,w,d)
-                
                 for idx, weight_dict in enumerate(weight_set_samples):  
-                    
                     model.load_state_dict(weight_dict)
                     model.to(device)
                     out[idx] = unpad(model(vol.float()))
                 
                 if not args.logits:
                     probs = F.sigmoid(out).data.mean(dim=0)
-                     
                 mean_out = out.mean(dim=0,keepdim=False)
-                out = mean_out
-                            
+                out = mean_out                
             else:
                 out = unpad(model(vol))
                 if not args.logits:
@@ -184,7 +175,6 @@ def test(args):
                 
             if args.logits:
                 probs = F.sigmoid(out).data 
-            
             # Binerzing predictions
             preds = (probs>0.5).float()
             
@@ -328,8 +318,8 @@ def test(args):
             'nll':[round(total_loss,4)],
             'dice':[round(total_dice,4)]}
 
-            csv_path = root_dir/'results'/'nll'/ 'run_sweeps_test.csv'
-
+            csv_path = root_dir/'results'/'nll'/ 'run_sweeps_test.csv
+            
             if os.path.exists(csv_path):
 
                 sweeps_df = pd.read_csv(csv_path)
