@@ -19,19 +19,14 @@ class SGLD(Optimizer):
                  addnoise=True,
                  N_train =0,
                  epoch_noise=False):
-
         if weight_decay <0.0:
             raise ValueError("Invalid weight_decay value:{}".format(weight_decay))
-
         if lr is not required and lr < 0.0:
             raise ValueError("Invalid leraning rate:{}".format(lr))
-
         if temp < 0:
             raise ValueError('temp {%.3f} must be positive'.format(temp))
-
         if N_train <=0:
             raise ValueError('You must provide total_sample_size to any SGD_MCMC method')
-
         defaults = dict(lr=lr,
                         weight_decay = weight_decay,
                         temp=temp,
@@ -75,11 +70,9 @@ class SGHM(Optimizer):
                  addnoise=True,
                  epoch_noise=False):
         if weight_decay <0.0:
-            raise ValueError("Invalid weight_decay value:{}".format(weight_decay))
-            
+            raise ValueError("Invalid weight_decay value:{}".format(weight_decay))   
         if lr is not required and lr < 0.0: 
             raise ValueError("Invalid leraning rate:{}".format(lr))
-            
         if momentum < 0.0:
             raise ValueError("Invalid momentum value: {}".format(momentum))
         defaults = dict(lr=lr,
@@ -96,8 +89,7 @@ class SGHM(Optimizer):
         loss = None
         if closure is not None:
             with torch.enable_grad():
-                loss = closure()
-            
+                loss = closure()     
         for group in self.param_groups:
             momentum = group['momentum']
             dampening = group['dampening']
