@@ -33,42 +33,28 @@ from UQ_LSN_19F.Dataloader.data import NoisedData
 
 
 parser = argparse.ArgumentParser(description='TESTING BUNet on 19FMRI')
-
 parser.add_argument('--exp',type=int,default=850,
                     help='ID of this expriment!')
-
 parser.add_argument('--dts',type=str, default='noise')
-
 parser.add_argument('--b_size',type =int, default =2, 
                     help = 'batch size for test set!')
-
-parser.add_argument('--dr',type=float,default=0.0,help='Dropout rate.')
-                    
+parser.add_argument('--dr',type=float,default=0.0,help='Dropout rate.')                    
 parser.add_argument('--opt',type=str,default='sgd',
                     help='Optimizer to train the model.')
-
 parser.add_argument('--crit',type=str,default='BCrsent', choices=('dice','BCrsent','comb'),
                     help='The cost function that we want to train the model.')
-
 parser.add_argument('--sampler',type=str,default=None, choices=('sgd','sgmcmc',None),
                     help='Optimizer to train the model.')
-
 parser.add_argument('--write-exp',type=bool,default=True, 
                     help='If we want to write test results in a dataframe.')
-
 parser.add_argument('--Nsamples',type=int, default=0,
                     help = 'the number of samples that we want to use for ensembeling.')
-
 parser.add_argument('--logits',type=bool, default=True,
                     help = 'if we want to take mean over logits or probablities.')
-
 parser.add_argument('--metrics',type =tuple, default =['cor_unc_thr','roc_unc_thr','unc_err_dice','ece','ece_s'], 
                     help = 'metrics that we want to use for evaluation!')
-
 parser.add_argument('--eval',type=str,default='last',choices=('best','last'),
                     help='if we want to evaluate at best checkpont or last.')
-
-
 args = parser.parse_args()
         
 def test(args):
@@ -321,18 +307,13 @@ def test(args):
             csv_path = root_dir/'results'/'nll'/ 'run_sweeps_test.csv
             
             if os.path.exists(csv_path):
-
                 sweeps_df = pd.read_csv(csv_path)
                 sweeps_df = sweeps_df.append(
                 pd.DataFrame.from_dict(data), ignore_index=True).set_index('exp')
-
             else:
-                
                 sweeps_df = pd.DataFrame.from_dict(data).set_index('exp')
-
             sweeps_df.to_csv(csv_path)               
-           
-                
+                           
 if __name__=='__main__':
     
     test(args)   
